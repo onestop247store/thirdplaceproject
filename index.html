@@ -5,20 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Third Place Master Plan</title>
   <style>
-    /* BỘ MÀU CƠ BẢN VÀ BIẾN KÍNH MỜ (LIQUID GLASS) */
-    :root {
-      --bg-cream: #E6E2D6;
-      --text-darkgreen: #1A352D;
-      --btn-olive: #709153;
-      --tab-bluegrey: #6B848C;
-      --border-khaki: #B1A78E;
-      
-      --glass-bg: rgba(255, 255, 255, 0.45);
-      --glass-border: rgba(255, 255, 255, 0.6);
-      --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-    }
-
-    /* BỘ MÀU COFFEE ROASTING (TỪ NHÂN XANH ĐẾN ESPRESSO) CHO CÁC PHASE */
+    :root { --bg-cream: #E6E2D6; --text-darkgreen: #1A352D; --btn-olive: #709153; --tab-bluegrey: #6B848C; --border-khaki: #B1A78E; --glass-bg: rgba(255, 255, 255, 0.45); --glass-border: rgba(255, 255, 255, 0.6); --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07); }
     .coffee-p0 { background: linear-gradient(135deg, rgba(155, 176, 143, 0.9), rgba(126, 153, 109, 0.9)); color: var(--text-darkgreen); }
     .coffee-p1 { background: linear-gradient(135deg, rgba(198, 204, 165, 0.9), rgba(179, 186, 140, 0.9)); color: var(--text-darkgreen); }
     .coffee-p2 { background: linear-gradient(135deg, rgba(224, 197, 148, 0.9), rgba(204, 172, 114, 0.9)); color: var(--text-darkgreen); }
@@ -28,19 +15,9 @@
     .coffee-p6 { background: linear-gradient(135deg, rgba(92, 53, 32, 0.98), rgba(71, 38, 20, 0.98)); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
     .coffee-p7 { background: linear-gradient(135deg, rgba(61, 33, 19, 0.98), rgba(46, 22, 11, 0.98)); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
     .coffee-p8 { background: linear-gradient(135deg, rgba(35, 18, 11, 1), rgba(20, 9, 4, 1)); color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
-
-    body { 
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; 
-      margin: 0; padding: 0; color: var(--text-darkgreen); background-color: var(--bg-cream);
-      background-image: radial-gradient(at 0% 0%, rgba(112, 145, 83, 0.25) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(107, 132, 140, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(177, 167, 142, 0.3) 0px, transparent 50%);
-      background-attachment: fixed; min-height: 100vh; -webkit-font-smoothing: antialiased;
-    }
-    
+    body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; color: var(--text-darkgreen); background-color: var(--bg-cream); background-image: radial-gradient(at 0% 0%, rgba(112, 145, 83, 0.25) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(107, 132, 140, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(177, 167, 142, 0.3) 0px, transparent 50%); background-attachment: fixed; min-height: 100vh; -webkit-font-smoothing: antialiased; }
     .container { max-width: 1000px; margin: 0 auto; padding: 30px 20px; }
     h2 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 30px; text-align: center; text-transform: uppercase; line-height: 1.3;}
-    h3 { font-size: 18px; margin-top: 0; margin-bottom: 15px;}
-    
-    /* GIAO DIỆN TABS CHÍNH */
     .tabs-container { display: flex; justify-content: center; margin-bottom: 30px; }
     .tabs { display: inline-flex; background: rgba(255,255,255,0.4); backdrop-filter: blur(10px); padding: 6px; border-radius: 16px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05); }
     .tab-btn { padding: 10px 24px; border: none; background: transparent; cursor: pointer; font-weight: 700; font-size: 14px; color: var(--tab-bluegrey); border-radius: 12px; transition: all 0.3s ease; }
@@ -49,36 +26,26 @@
     .view-panel { display: none; }
     .view-panel.active { display: block; animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
     @keyframes scaleIn { 0% { opacity: 0; transform: translateY(10px) scale(0.98); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
-    
-    /* KIẾN TRÚC ACCORDION */
     .accordion-item { background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 16px; margin-bottom: 12px; box-shadow: var(--glass-shadow); overflow: hidden; }
     .accordion-header { cursor: pointer; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; transition: background 0.3s ease; }
     .accordion-header:hover { filter: brightness(1.03); }
     .accordion-arrow { font-size: 12px; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); margin-left: 10px; opacity: 0.8; }
-    .accordion-item.active > .accordion-header > .accordion-arrow,
-    .accordion-item.active > .accordion-header > div > .accordion-arrow { transform: rotate(180deg); }
+    .accordion-item.active > .accordion-header > .accordion-arrow { transform: rotate(180deg); }
     .accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0, 1, 0, 1), padding 0.5s ease; padding: 0 20px; background: rgba(255, 255, 255, 0.3); }
     .accordion-item.active > .accordion-body { max-height: 5000px; padding: 20px; border-top: 1px solid rgba(255,255,255,0.4); }
-
-    /* TAB PHÂN TRANG (FOLDER TABS) TRONG DASHBOARD */
     .folder-tabs { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 2px solid rgba(255,255,255,0.7); margin-bottom: 15px; }
     .folder-tab { padding: 10px 18px; border-radius: 12px 12px 0 0; border: 1px solid rgba(255,255,255,0.6); border-bottom: none; cursor: pointer; font-weight: 600; font-size: 13px; color: var(--text-darkgreen); transition: all 0.2s ease; box-shadow: inset 0 -4px 6px rgba(0,0,0,0.02); }
     .folder-tab:hover { filter: brightness(0.95); }
-    .folder-tab.active { background: rgba(255,255,255,0.9) !important; font-weight: 800; border-color: rgba(255,255,255,0.9); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); transform: translateY(1px); color: var(--text-darkgreen); }
+    .folder-tab.active { background: rgba(255,255,255,0.9) !important; font-weight: 800; border-color: rgba(255,255,255,0.9); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); transform: translateY(1px); }
     .owner-task-list { display: none; background: rgba(255,255,255,0.9); border-radius: 0 12px 12px 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(255,255,255,0.9); }
     .owner-task-list.active { display: block; animation: fadeIn 0.3s; }
-    
-    /* STYLE TASK 0/1 VÀ 1/1 TRONG DASHBOARD */
-    .task-item-dash { padding: 10px 0; border-bottom: 1px dashed rgba(0,0,0,0.1); font-size: 14px; display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
+    .task-item-dash { padding: 10px 0; border-bottom: 1px dashed rgba(0,0,0,0.1); font-size: 14px; display: flex; justify-content: space-between; gap: 15px; }
     .task-item-dash:last-child { border-bottom: none; padding-bottom: 0; }
     .task-item-dash.pending { color: #C0392B; font-weight: 700; } 
     .task-item-dash.done { color: var(--tab-bluegrey); text-decoration: line-through; font-style: italic; opacity: 0.8; }
     .task-count-badge { background: #fff; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 800; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: nowrap; }
     .pending .task-count-badge { color: #C0392B; border: 1px solid #f5c6c6; }
     .done .task-count-badge { color: var(--tab-bluegrey); border: 1px solid rgba(0,0,0,0.1); }
-    .pending-tasks-list { list-style-type: none; padding: 0; margin: 0; max-height: 220px; overflow-y: auto; padding-right: 8px; }
-
-    /* STYLE TASK CARD TRONG TIẾN ĐỘ CÔNG VIỆC (COMPACT) */
     .task-card { background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(255,255,255,0.9); border-radius: 12px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);}
     .task-card.task-done { opacity: 0.7; border: 1px dashed rgba(0,0,0,0.1); }
     .task-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;}
@@ -88,37 +55,21 @@
     .badge-blocked { background: #fdf2d0; color: #856404; border: 1px solid #ffeeba; }
     .badge-updating { background: #e8f4f8; color: #176e8a; border: 1px solid #c0e0eb; }
     .badge-done { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-    
-    /* BOX CHI TIẾT CÔNG VIỆC (GỘP THÔNG TIN) */
-    .task-detail-box {
-      font-size: 13px; color: var(--text-darkgreen); margin-bottom: 10px; line-height: 1.6;
-      background: rgba(255,255,255,0.5); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05);
-    }
-    
+    .task-detail-box { font-size: 13px; color: var(--text-darkgreen); margin-bottom: 10px; line-height: 1.6; background: rgba(255,255,255,0.5); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05); }
     .task-action-area { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; align-items: stretch;}
-    .input-flat { padding: 10px 14px; border: 1px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.9); color: var(--text-darkgreen); border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 13px; transition: all 0.2s; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02); margin: 0; flex: 1; min-width: 200px;}
+    .input-flat { padding: 10px 14px; border: 1px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.9); border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 13px; flex: 1; min-width: 200px;}
     .input-flat:focus { outline: none; background: #fff; border-color: var(--tab-bluegrey); box-shadow: 0 0 0 2px rgba(107, 132, 140, 0.2); }
-    
-    /* 3 NÚT HÀNH ĐỘNG */
-    .btn-action { padding: 8px 12px; border: none; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; justify-content: center;}
+    .btn-action { padding: 8px 12px; border: none; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s; white-space: nowrap;}
     .btn-update { background: var(--tab-bluegrey); color: #fff; }
     .btn-block { background: #A05252; color: #fff; } 
     .btn-done { background: var(--btn-olive); color: #fff; }
     .btn-action:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-
-    /* NÚT QUẢN TRỊ */
-    .btn-admin-large { padding: 12px 16px; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s; background: var(--btn-olive); color: #fff; width: 100%; margin-bottom: 15px;}
-    .btn-admin-large:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(112, 145, 83, 0.4); }
-
-    /* SCROLLBAR */
+    .btn-admin-large { padding: 12px 16px; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; background: var(--btn-olive); color: #fff; width: 100%; margin-bottom: 15px;}
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: var(--border-khaki); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--tab-bluegrey); }
-
-    /* TOAST */
     #toast { visibility: hidden; min-width: 250px; background: rgba(26, 53, 45, 0.95); backdrop-filter: blur(10px); color: #fff; text-align: center; border-radius: 20px; padding: 16px 24px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: bold; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-    #toast.show { visibility: visible; animation: fadein 0.5s cubic-bezier(0.16, 1, 0.3, 1), fadeout 0.5s 2.5s cubic-bezier(0.16, 1, 0.3, 1); }
+    #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
     @keyframes fadein { from {bottom: 0; opacity: 0; transform: translate(-50%, 20px);} to {bottom: 30px; opacity: 1; transform: translate(-50%, 0);} }
     @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
   </style>
@@ -139,12 +90,9 @@
     </div>
   </div>
 
-  <!-- TAB 1: DASHBOARD -->
   <div id="dashboard-view" class="view-panel active">
     <div style="background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(16px); border-radius: 24px; padding: 30px 25px; margin-bottom: 25px; box-shadow: var(--glass-shadow); border: 1px solid var(--glass-border);">
       <h3 style="text-align: center; color: var(--tab-bluegrey); margin-bottom: 20px;">Tiến độ tiến tới Soft Opening</h3>
-      
-      <!-- ĐỒ HỌA HẠT CÀ PHÊ (COFFEE BEAN PROGRESS BAR) -->
       <div style="text-align: center;">
         <svg viewBox="0 0 200 100" style="width: 100%; max-width: 250px; height: auto; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.15));">
           <defs>
@@ -153,7 +101,7 @@
               <path d="M 15,50 C 60,95 140,5 185,50" stroke="black" stroke-width="6" fill="none" stroke-linecap="round"/>
             </mask>
             <clipPath id="progress-clip">
-              <rect id="bean-progress-rect" width="0" height="100" x="0" y="0" style="transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);"/>
+              <rect id="bean-progress-rect" width="0" height="100" x="0" y="0" style="transition: width 1.5s ease;"/>
             </clipPath>
           </defs>
           <ellipse cx="100" cy="50" rx="95" ry="48" fill="rgba(0,0,0,0.08)" mask="url(#bean-mask)"/>
@@ -162,24 +110,16 @@
         </svg>
       </div>
     </div>
-
-    <div id="detailed-phases-container">
-      <!-- Sinh ra bằng JS -->
-    </div>
+    <div id="detailed-phases-container"></div>
   </div>
 
-  <!-- TAB 2: TIẾN ĐỘ CÔNG VIỆC -->
   <div id="personal-view" class="view-panel">
-    <div id="personal-tasks-container">
-      <!-- Sinh ra các Nested Accordion bằng JS -->
-    </div>
+    <div id="personal-tasks-container"></div>
   </div>
 
-  <!-- TAB 3: QUẢN TRỊ -->
   <div id="admin-view" class="view-panel">
     <div style="background: var(--glass-bg); backdrop-filter: blur(16px); border-radius: 24px; padding: 30px; max-width: 500px; margin: 0 auto; box-shadow: var(--glass-shadow); border: 1px solid var(--glass-border);">
       <h3 style="text-align: center; margin-bottom: 25px;">Mật lệnh Dự án (Admin)</h3>
-      
       <label style="font-weight:600; display:block; margin-bottom:8px; margin-top: 10px;">Chọn Phase cần can thiệp:</label>
       <select id="admin-target-phase" class="input-flat" style="margin-bottom: 25px;">
         <option value="0">Phase 0 - Kick-off & Chốt phạm vi</option>
@@ -192,13 +132,10 @@
         <option value="7">Phase 7 - Chạy thử (Dry Run)</option>
         <option value="8">Phase 8 - Soft Opening</option>
       </select>
-      
       <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.1); margin: 30px 0;">
-      
       <h4 style="color: var(--tab-bluegrey);">Quyền năng 1: Cập nhật Hạn chót mới</h4>
       <input type="date" id="admin-new-date" class="input-flat" style="margin-bottom: 10px;">
       <button class="btn-admin-large" onclick="triggerDeadlineUpdate()">LƯU HẠN CHÓT MỚI</button>
-      
       <h4 style="color: var(--tab-bluegrey); margin-top: 25px;">Quyền năng 2: Mở khóa Cổng (Pass Gate)</h4>
       <button class="btn-admin-large" style="background: var(--text-darkgreen);" onclick="triggerPassGate()">XÁC NHẬN MỞ KHÓA PHASE NÀY</button>
     </div>
@@ -208,9 +145,8 @@
 <div id="toast">Thông báo</div>
 
 <script>
-  // KHAI BÁO LINK API GOOGLE APPS SCRIPT
+  // KHAI BÁO LINK API GOOGLE APPS SCRIPT CỦA BẠN
   const API_URL = "https://script.google.com/macros/s/AKfycbz93j2C3W27swxCDnQB4cNlmPls1PJ4tClHsrpshYwA_RyixLhw635fSsU94UD8jl6K0g/exec";
-
   const ADMIN_PIN = "528689";
   const CURRENT_DATE = new Date("2026-07-15T12:00:00"); 
   let isAdminAuthenticated = false;
@@ -230,7 +166,7 @@
     "Branding": "rgba(192, 75, 75, 0.35)" 
   };
 
-  // MOCK DATA (DỮ LIỆU TĨNH BASE)
+  // DỮ LIỆU TĨNH BASE (HIỂN THỊ NGAY LẬP TỨC TRƯỚC KHI GỌI API)
   let mockData = {
     phaseConfigs: {
       "0": { start: "2026-07-09", end: "2026-07-12", status: "PASSED" }, 
@@ -417,7 +353,7 @@
       { id: "P7_D2", phase: "7", owner: "Đạt", name: "Test thanh toán, Phê duyệt menu khai trương", deadline: "2026-08-30", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Quẹt thẻ/QR/tiền mặt thử. Chốt menu in.<br>📦 <b>Bàn giao:</b> Finance Test.<br>✅ <b>Hoàn thành khi:</b> Tiền vào đúng tài khoản." },
       { id: "P7_S1", phase: "7", owner: "S2", name: "Sửa lỗi thi công (Dặm vá)", deadline: "2026-08-30", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Sơn lại vết xước, chỉnh bản lề, thông tắc cống (nếu có).<br>📦 <b>Bàn giao:</b> Punch List Cleared.<br>✅ <b>Hoàn thành khi:</b> Không gian 95% hoàn hảo." },
       { id: "P7_Tr1", phase: "7", owner: "Trâm", name: "Chạy thử Bar (Vòng 1 & 2)", deadline: "2026-08-30", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Ép bill Bar để test độ chịu tải.<br>📦 <b>Bàn giao:</b> Bar Dry Run Report.<br>✅ <b>Hoàn thành khi:</b> Xác định được món nào bị kẹt khi dồn bill." },
-      { id: "P7_Tr2", phase: "7", owner: "Trâm", name: "Thu thập phản hồi & Chốt Menu đồ uống", deadline: "2026-08-30", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Ghi nhận ý kiến F&F. Sửa vị hoặc tạm ẩn món.<br>📦 <b>Bàn giao:</b> Soft Drinks Menu.<br>✅ <b>Hoàn thành khi:</b> Chỉ bán những món tự tin nhất." },
+      { id: "P7_Tr2", phase: "7", owner: "Trâm", name: "Thu thập phản hồi & Chốt Menu đồ uống", deadline: "2026-08-30", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Ghi nhận ý kiến F&F. Sửa vị hoặc tạm ẩn món.<br>📦 <b>Bàn giao:</b> Soft Drinks Menu.<br>✅ <b>Hoàn thành khi:</b> Chỉ bán những món tự tự tin nhất." },
       { id: "P7_Th1", phase: "7", owner: "Thuý", name: "Chạy thử Bếp (Vòng 1 & 2)", deadline: "2026-08-30", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Dồn bill Bếp để test tốc độ và phối hợp thớt/chảo.<br>📦 <b>Bàn giao:</b> Kitchen Dry Run Report.<br>✅ <b>Hoàn thành khi:</b> NV không rối loạn khi nấu 5 món cùng lúc." },
       { id: "P7_Th2", phase: "7", owner: "Thuý", name: "Thu thập phản hồi & Chốt Menu món ăn", deadline: "2026-08-30", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Ghi nhận khách khen/chê món. Tạm ẩn món khó.<br>📦 <b>Bàn giao:</b> Soft Food Menu.<br>✅ <b>Hoàn thành khi:</b> Menu chốt mở bán." },
       { id: "P7_M1", phase: "7", owner: "Minh", name: "Quan sát Dry run & Góp ý", deadline: "2026-08-30", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Đứng ngoài quan sát luồng Bếp/Sảnh, góp ý khách quan.<br>📦 <b>Bàn giao:</b> Advisor Dry Run Note.<br>✅ <b>Hoàn thành khi:</b> Đạt/Thuý có góc nhìn thứ 3 về lỗi vận hành." },
@@ -429,19 +365,96 @@
       { id: "P8_S1", phase: "8", owner: "S2", name: "Xử lý khẩn cấp", deadline: "2026-09-07", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Standby xử lý vỡ ống nước, nhảy điện, máy lạnh chảy nước...<br>📦 <b>Bàn giao:</b> Support Log.<br>✅ <b>Hoàn thành khi:</b> Hỗ trợ kịp thời (nếu có)." },
       { id: "P8_Tr1", phase: "8", owner: "Trâm", name: "Vận hành Bar & Đánh giá Menu", deadline: "2026-09-07", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Đứng quầy giám sát. Đánh giá món nào khách chê/đổi.<br>📦 <b>Bàn giao:</b> Drink Log.<br>✅ <b>Hoàn thành khi:</b> Duy trì được chất lượng suốt tuần Soft." },
       { id: "P8_Th1", phase: "8", owner: "Thuý", name: "Vận hành Bếp & Đánh giá Menu", deadline: "2026-09-07", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Đứng bếp/Giám sát. Ghi nhận món dư thừa (waste).<br>📦 <b>Bàn giao:</b> Food Log.<br>✅ <b>Hoàn thành khi:</b> Đảm bảo ra món không bị sống/cháy." },
-      { id: "P8_M1", phase: "8", owner: "Minh", name: "Hỗ trợ giám sát & Đánh giá món ăn", deadline: "2026-09-07", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Đóng vai khách đến ăn, feedback ẩn.<br>📦 <b>Bàn giao:</b> Review Notes.<br>✅ <b>Hoàn thành khi:</b> Phát hiện được " },
+      { id: "P8_M1", phase: "8", owner: "Minh", name: "Hỗ trợ giám sát & Đánh giá món ăn", deadline: "2026-09-07", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Đóng vai khách đến ăn, feedback ẩn.<br>📦 <b>Bàn giao:</b> Review Notes.<br>✅ <b>Hoàn thành khi:</b> Phát hiện lỗi khách quan." },
       { id: "P8_N1", phase: "8", owner: "Nghiêm", name: "Điều phối khách & Đánh giá trải nghiệm", deadline: "2026-09-07", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Đứng Host, xử lý phàn nàn, thu QR feedback.<br>📦 <b>Bàn giao:</b> GX Report.<br>✅ <b>Hoàn thành khi:</b> Giải tỏa được bức xúc của khách ngay tại quán." },
       { id: "P8_B1", phase: "8", owner: "Branding", name: "Quan sát thương hiệu & Sửa file", deadline: "2026-09-07", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Sửa giá menu nếu cần. Nhặt ảnh thật làm Grand Opening.<br>📦 <b>Bàn giao:</b> Updated Brand Files.<br>✅ <b>Hoàn thành khi:</b> Cập nhật xong các lỗi typo/giá." }
     ]
   };
 
-  // 1. RENDER DASHBOARD (GIAO DIỆN CHÍNH)
+  // Các hàm chức năng dùng chung
+  function getCoffeeRoastColor(pct) {
+    let r, g, b;
+    if (pct < 50) {
+        let p = pct / 50; 
+        r = Math.round(155 + p * (156 - 155)); 
+        g = Math.round(176 + p * (102 - 176)); 
+        b = Math.round(143 + p * (68 - 143));  
+    } else {
+        let p = (pct - 50) / 50; 
+        r = Math.round(156 + p * (35 - 156));  
+        g = Math.round(102 + p * (18 - 102));  
+        b = Math.round(68 + p * (11 - 68));    
+    }
+    return `rgb(${r}, ${g}, ${b})`;
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById("toast");
+    toast.innerText = msg;
+    toast.className = "show";
+    setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+  }
+
+  function switchTab(tabName, btnElement) {
+    if (tabName === 'admin' && !isAdminAuthenticated) {
+      let pin = prompt("Bảo mật: Vui lòng nhập mã PIN quản trị:");
+      if (pin === ADMIN_PIN) {
+        isAdminAuthenticated = true;
+        showToast("Xác thực quản trị thành công!");
+      } else {
+        if(pin !== null) showToast("Mã PIN không chính xác!");
+        return;
+      }
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+    
+    if (btnElement) {
+      btnElement.classList.add('active');
+    } else if (event && event.target && event.target.classList.contains('tab-btn')) {
+      event.target.classList.add('active');
+    }
+    
+    document.getElementById(tabName + '-view').classList.add('active');
+    if(tabName === 'dashboard') renderDashboard();
+    if(tabName === 'personal') loadPersonalTasks();
+  }
+
+  function toggleAccordion(id) {
+    const el = document.getElementById(id);
+    if(el) {
+      el.classList.toggle('active');
+      if(event) event.stopPropagation(); 
+    }
+  }
+
+  function getActiveAccordions() {
+    return Array.from(document.querySelectorAll('.accordion-item.active')).map(el => el.id);
+  }
+
+  function restoreActiveAccordions(ids) {
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.classList.add('active');
+    });
+  }
+
+  window.switchOwnerTab = function(tabElement, targetId) {
+    let phaseContainer = tabElement.closest('.accordion-body');
+    phaseContainer.querySelectorAll('.folder-tab').forEach(t => t.classList.remove('active'));
+    phaseContainer.querySelectorAll('.owner-task-list').forEach(c => c.classList.remove('active'));
+
+    tabElement.classList.add('active');
+    document.getElementById(targetId).classList.add('active');
+  };
+
   function renderDashboard() {
+    let activeIds = getActiveAccordions();
     let total = mockData.taskList.length;
     let doneCount = mockData.taskList.filter(t => t.status === 'Đã hoàn thành').length;
     let percent = total > 0 ? Math.round((doneCount / total) * 100) : 0;
     
-    // CẬP NHẬT TIẾN ĐỘ HẠT CÀ PHÊ
     document.getElementById('bean-progress-rect').setAttribute('width', (percent / 100) * 200);
     document.getElementById('bean-text').textContent = percent + '%';
     document.getElementById('bean-fill-shape').setAttribute('fill', getCoffeeRoastColor(percent));
@@ -461,7 +474,6 @@
       let phaseColorClass = `coffee-p${p}`;
       let borderStyle = isPhaseOverdue ? 'border: 2px solid rgba(192, 75, 75, 0.8); box-shadow: 0 0 15px rgba(192,75,75,0.2);' : '';
 
-      // Gom nhóm theo Owner
       let ownersData = {};
       phaseTasks.forEach(t => {
         if (!ownersData[t.owner]) ownersData[t.owner] = { total: 0, done: 0, allTasks: [] };
@@ -470,7 +482,6 @@
         ownersData[t.owner].allTasks.push(t);
       });
 
-      // TẠO FOLDER TABS
       let ownerTabsHtml = '<div class="folder-tabs">';
       let ownerContentHtml = '<div class="owner-task-panels">';
       let isFirstOwner = true;
@@ -481,10 +492,8 @@
         let bgCol = ownerColors[o] || "rgba(255,255,255,0.3)";
         let activeClass = isFirstOwner ? 'active' : '';
 
-        // Tab Nút
         ownerTabsHtml += `<div class="folder-tab ${activeClass}" style="background: ${bgCol};" onclick="switchOwnerTab(this, 'dash-phase-${p}-owner-${o}')">${o} ${ownerPercent}%</div>`;
 
-        // Danh sách công việc của Owner
         let taskListHtml = '';
         od.allTasks.forEach(pt => {
           let isDone = pt.status === 'Đã hoàn thành';
@@ -524,10 +533,11 @@
     }
     
     document.getElementById('detailed-phases-container').innerHTML = phasesHtml;
+    restoreActiveAccordions(activeIds);
   }
 
-  // 2. RENDER TIẾN ĐỘ CÔNG VIỆC (TAB CÔNG VIỆC)
   function loadPersonalTasks() {
+    let activeIds = getActiveAccordions();
     let uniqueOwners = [...new Set(mockData.taskList.map(t => t.owner))];
     let html = '';
     let now = CURRENT_DATE;
@@ -615,19 +625,17 @@
     });
     
     document.getElementById('personal-tasks-container').innerHTML = html;
+    restoreActiveAccordions(activeIds);
   }
 
-  // 3. XỬ LÝ CẬP NHẬT TRẠNG THÁI BẰNG API
   async function submitUpdate(taskId, status) {
     let inputVal = document.getElementById('ev-' + taskId).value;
-    
-    // Yêu cầu nhập mô tả nếu hoàn thành/báo nghẽn
     if ((status === 'Đã hoàn thành' || status === 'Báo nghẽn') && (!inputVal || inputVal.trim() === "")) {
       showToast("Lỗi: Bắt buộc đính kèm link hoặc mô tả trạng thái!");
       return;
     }
 
-    // A. Cập nhật UI ngay lập tức (Optimistic Update)
+    // Cập nhật giao diện lập tức (Optimistic UI)
     let taskIndex = mockData.taskList.findIndex(t => t.id === taskId);
     if(taskIndex !== -1) {
       mockData.taskList[taskIndex].status = status;
@@ -641,11 +649,9 @@
 
     showToast("Đang đồng bộ lên Google Sheets...");
 
-    // B. Gửi POST Request (Dưới dạng text/plain để né CORS Preflight)
     try {
       const response = await fetch(API_URL, {
         method: 'POST',
-        // KHÔNG định nghĩa Headers Content-Type: application/json ở đây
         body: JSON.stringify({
           action: 'updateTask',
           taskId: taskId,
@@ -653,7 +659,6 @@
           evidence: inputVal
         })
       });
-      
       const result = await response.json();
       if (result.status === 'success') {
         showToast(`Cập nhật thành công: ${status}!`);
@@ -661,19 +666,16 @@
         showToast("Lỗi đồng bộ server: " + result.message);
       }
     } catch (error) {
-      // Vì đã update Optimistic UI nên dù lỗi kết nối, User vẫn thấy mượt.
       showToast("Đã lưu tạm thời (Lỗi kết nối máy chủ).");
     }
   }
 
-  // 4. HÀM ĐỒNG BỘ DỮ LIỆU TỪ SERVER KHI MỞ TRANG
   async function syncDataFromServer() {
     showToast("Đang tải dữ liệu tiến độ mới nhất...");
     try {
       const response = await fetch(API_URL + "?action=getTasks");
       const remoteData = await response.json();
       
-      // A. Cập nhật mảng công việc (chỉ lấy status và evidence)
       if (remoteData.tasks && remoteData.tasks.length > 0) {
         remoteData.tasks.forEach(remote => {
           let localTask = mockData.taskList.find(t => t.id === remote.id);
@@ -684,7 +686,6 @@
         });
       }
 
-      // B. Cập nhật các thay đổi cấu hình Phase (Deadline, Tình trạng khóa)
       if (remoteData.phases && remoteData.phases.length > 0) {
         remoteData.phases.forEach(remote => {
           let p = remote.phase.toString();
@@ -695,21 +696,18 @@
         });
       }
         
-      // C. Re-render UI với dữ liệu thực từ Sheets
       let activeIds = getActiveAccordions();
       if(document.getElementById('dashboard-view').classList.contains('active')) renderDashboard();
       if(document.getElementById('personal-view').classList.contains('active')) loadPersonalTasks();
       restoreActiveAccordions(activeIds);
       
       showToast("Đồng bộ dữ liệu hoàn tất!");
-      
     } catch (error) {
       console.error("Lỗi đồng bộ:", error);
       showToast("Lỗi máy chủ, đang chạy bằng dữ liệu cục bộ.");
     }
   }
 
-  // 5. QUẢN TRỊ VIÊN CẬP NHẬT DEADLINE BẰNG API
   async function triggerDeadlineUpdate() {
     if (!isAdminAuthenticated) return;
     let phase = document.getElementById('admin-target-phase').value;
@@ -748,7 +746,6 @@
     }
   }
 
-  // 6. QUẢN TRỊ VIÊN MỞ KHÓA PHASE BẰNG API
   async function triggerPassGate() {
     if (!isAdminAuthenticated) return;
     let phase = document.getElementById('admin-target-phase').value;
@@ -781,13 +778,9 @@
     }
   }
 
-  // KHỞI TẠO HỆ THỐNG
   window.onload = () => { 
-    // Dựng khung UI ngay lập tức với base data tĩnh siêu tốc
     renderDashboard(); 
     loadPersonalTasks(); 
-    
-    // Gọi hàm chạy ngầm để lấy Trạng thái & Link Minh chứng đắp vào giao diện
     syncDataFromServer(); 
   };
 </script>

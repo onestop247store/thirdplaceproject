@@ -145,7 +145,7 @@
 <div id="toast">Thông báo</div>
 
 <script>
-  // KHAI BÁO LINK API GOOGLE APPS SCRIPT CỦA BẠN
+  // KHAI BÁO LINK API GOOGLE APPS SCRIPT
   const API_URL = "https://script.google.com/macros/s/AKfycbz93j2C3W27swxCDnQB4cNlmPls1PJ4tClHsrpshYwA_RyixLhw635fSsU94UD8jl6K0g/exec";
   const ADMIN_PIN = "528689";
   const CURRENT_DATE = new Date("2026-07-15T12:00:00"); 
@@ -166,7 +166,6 @@
     "Branding": "rgba(192, 75, 75, 0.35)" 
   };
 
-  // DỮ LIỆU TĨNH BASE (HIỂN THỊ NGAY LẬP TỨC TRƯỚC KHI GỌI API)
   let mockData = {
     phaseConfigs: {
       "0": { start: "2026-07-09", end: "2026-07-12", status: "PASSED" }, 
@@ -353,7 +352,7 @@
       { id: "P7_D2", phase: "7", owner: "Đạt", name: "Test thanh toán, Phê duyệt menu khai trương", deadline: "2026-08-30", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Quẹt thẻ/QR/tiền mặt thử. Chốt menu in.<br>📦 <b>Bàn giao:</b> Finance Test.<br>✅ <b>Hoàn thành khi:</b> Tiền vào đúng tài khoản." },
       { id: "P7_S1", phase: "7", owner: "S2", name: "Sửa lỗi thi công (Dặm vá)", deadline: "2026-08-30", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Sơn lại vết xước, chỉnh bản lề, thông tắc cống (nếu có).<br>📦 <b>Bàn giao:</b> Punch List Cleared.<br>✅ <b>Hoàn thành khi:</b> Không gian 95% hoàn hảo." },
       { id: "P7_Tr1", phase: "7", owner: "Trâm", name: "Chạy thử Bar (Vòng 1 & 2)", deadline: "2026-08-30", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Ép bill Bar để test độ chịu tải.<br>📦 <b>Bàn giao:</b> Bar Dry Run Report.<br>✅ <b>Hoàn thành khi:</b> Xác định được món nào bị kẹt khi dồn bill." },
-      { id: "P7_Tr2", phase: "7", owner: "Trâm", name: "Thu thập phản hồi & Chốt Menu đồ uống", deadline: "2026-08-30", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Ghi nhận ý kiến F&F. Sửa vị hoặc tạm ẩn món.<br>📦 <b>Bàn giao:</b> Soft Drinks Menu.<br>✅ <b>Hoàn thành khi:</b> Chỉ bán những món tự tự tin nhất." },
+      { id: "P7_Tr2", phase: "7", owner: "Trâm", name: "Thu thập phản hồi & Chốt Menu đồ uống", deadline: "2026-08-30", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Ghi nhận ý kiến F&F. Sửa vị hoặc tạm ẩn món.<br>📦 <b>Bàn giao:</b> Soft Drinks Menu.<br>✅ <b>Hoàn thành khi:</b> Chỉ bán những món tự tin nhất." },
       { id: "P7_Th1", phase: "7", owner: "Thuý", name: "Chạy thử Bếp (Vòng 1 & 2)", deadline: "2026-08-30", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Dồn bill Bếp để test tốc độ và phối hợp thớt/chảo.<br>📦 <b>Bàn giao:</b> Kitchen Dry Run Report.<br>✅ <b>Hoàn thành khi:</b> NV không rối loạn khi nấu 5 món cùng lúc." },
       { id: "P7_Th2", phase: "7", owner: "Thuý", name: "Thu thập phản hồi & Chốt Menu món ăn", deadline: "2026-08-30", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Ghi nhận khách khen/chê món. Tạm ẩn món khó.<br>📦 <b>Bàn giao:</b> Soft Food Menu.<br>✅ <b>Hoàn thành khi:</b> Menu chốt mở bán." },
       { id: "P7_M1", phase: "7", owner: "Minh", name: "Quan sát Dry run & Góp ý", deadline: "2026-08-30", status: "Chưa hoàn thành", desc: "🎯 <b>Nhiệm vụ:</b> Đứng ngoài quan sát luồng Bếp/Sảnh, góp ý khách quan.<br>📦 <b>Bàn giao:</b> Advisor Dry Run Note.<br>✅ <b>Hoàn thành khi:</b> Đạt/Thuý có góc nhìn thứ 3 về lỗi vận hành." },
@@ -652,6 +651,10 @@
     try {
       const response = await fetch(API_URL, {
         method: 'POST',
+        redirect: "follow", // <-- Bắt buộc để theo dõi chuyển hướng của Google
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8" // <-- Thủ thuật để bypass CORS Preflight
+        },
         body: JSON.stringify({
           action: 'updateTask',
           taskId: taskId,
@@ -673,7 +676,10 @@
   async function syncDataFromServer() {
     showToast("Đang tải dữ liệu tiến độ mới nhất...");
     try {
-      const response = await fetch(API_URL + "?action=getTasks");
+      const response = await fetch(API_URL + "?action=getTasks", {
+        method: "GET",
+        redirect: "follow"
+      });
       const remoteData = await response.json();
       
       if (remoteData.tasks && remoteData.tasks.length > 0) {
@@ -719,6 +725,10 @@
     try {
       const response = await fetch(API_URL, {
         method: 'POST',
+        redirect: "follow",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
         body: JSON.stringify({
           action: 'adminAction',
           pin: ADMIN_PIN,
@@ -754,6 +764,10 @@
     try {
       const response = await fetch(API_URL, {
         method: 'POST',
+        redirect: "follow",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
         body: JSON.stringify({
           action: 'adminAction',
           pin: ADMIN_PIN,

@@ -802,8 +802,11 @@
 
       let itemsHtml = '';
       category.items.forEach((item, itemIndex) => {
+        // ĐẾM SỐ LƯỢNG GIAO DỊCH CON (NẾU CÓ)
+        let subItemsCount = item.subItems ? item.subItems.length : 0;
+        let hasDetails = subItemsCount > 0;
+        
         // TÍNH AUTO-SUM NẾU CÓ SUB-ITEMS
-        let hasDetails = item.subItems && item.subItems.length > 0;
         if (hasDetails) {
           item.actual = item.subItems.reduce((sum, d) => sum + (d.amount || 0), 0);
         }
@@ -817,11 +820,8 @@
         if(item.actual === 0) variance = 0; 
         let displayVariance = item.actual === 0 ? "-" : `${varPrefix}${formatVND(variance)}`;
 
-        // NÚT SỔ XUỐNG DÀNH CHO SUB-ITEMS (Nếu có mảng subItems khai báo)
-        let expandBtn = '';
-        if (item.subItems !== undefined) {
-            expandBtn = `<br><button class="btn-expand" onclick="toggleSubRow('sub-${item.id}')">⊞ Chi tiết (${item.subItems.length} GD)</button>`;
-        }
+        // NÚT SỔ XUỐNG ÁP DỤNG CHO TẤT CẢ CÁC DÒNG MẶC ĐỊNH
+        let expandBtn = `<br><button class="btn-expand" onclick="toggleSubRow('sub-${item.id}')">⊞ Chi tiết (${subItemsCount} GD)</button>`;
 
         itemsHtml += `
           <tr>
@@ -847,9 +847,9 @@
           </tr>
         `;
 
-        // RENDER SUB-ITEMS ROW
-        if (item.subItems !== undefined) {
-          let subItemsHtml = '';
+        // RENDER BẢNG SUB-ITEMS (BẢNG CON) CHO TẤT CẢ CÁC DÒNG
+        let subItemsHtml = '';
+        if (item.subItems) {
           item.subItems.forEach((detail, dIndex) => {
             subItemsHtml += `
               <tr>
@@ -858,19 +858,20 @@
               </tr>
             `;
           });
-
-          itemsHtml += `
-            <tr id="sub-${item.id}" class="sub-row" style="display: none;">
-              <td colspan="5" style="padding: 0 15px 15px 40px;">
-                <table class="sub-table">
-                  <thead><tr><th>Nội dung thanh toán chi tiết</th><th style="text-align:right;">Số tiền (đ)</th></tr></thead>
-                  <tbody>${subItemsHtml}</tbody>
-                </table>
-                <button class="btn-expand" style="margin-top: 5px; border-color: var(--btn-olive); color: var(--btn-olive);" onclick="addCapexDetail('${catIndex}', '${itemIndex}')">+ Thêm bill mới</button>
-              </td>
-            </tr>
-          `;
         }
+
+        // BỌC BẢNG CON VÀ NÚT "THÊM BILL" CHO MỌI HẠNG MỤC
+        itemsHtml += `
+          <tr id="sub-${item.id}" class="sub-row" style="display: none;">
+            <td colspan="5" style="padding: 0 15px 15px 40px;">
+              <table class="sub-table">
+                <thead><tr><th>Nội dung thanh toán chi tiết</th><th style="text-align:right;">Số tiền (đ)</th></tr></thead>
+                <tbody>${subItemsHtml}</tbody>
+              </table>
+              <button class="btn-expand" style="margin-top: 5px; border-color: var(--btn-olive); color: var(--btn-olive);" onclick="addCapexDetail('${catIndex}', '${itemIndex}')">+ Thêm bill mới</button>
+            </td>
+          </tr>
+        `;
       });
 
       globalBudget += catBudget;

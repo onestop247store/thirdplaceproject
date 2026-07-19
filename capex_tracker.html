@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Third Place - Interactive CAPEX Tracker</title>
+  <style>
+    :root {
+      --bg-cream: #E6E2D6;
+      --text-darkgreen: #1A352D;
+      --btn-olive: #709153;
+      --tab-bluegrey: #6B848C;
+      --border-khaki: #B1A78E;
+      --danger-red: #C0392B;
+      --success-green: #27AE60;
+      
+      --glass-bg: rgba(255, 255, 255, 0.6);
+      --glass-border: rgba(255, 255, 255, 0.8);
+      --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+    }
+
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; 
+      margin: 0; padding: 0; color: var(--text-darkgreen); background-color: var(--bg-cream);
+      background-image: radial-gradient(at 0% 0%, rgba(112, 145, 83, 0.2) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(107, 132, 140, 0.1) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(177, 167, 142, 0.2) 0px, transparent 50%);
+      background-attachment: fixed; min-height: 100vh; -webkit-font-smoothing: antialiased;
+    }
+    
+    .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+    h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 20px; text-align: center; text-transform: uppercase;}
+    
+    /* WIDGETS TỔNG QUAN */
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .summary-card { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 25px; box-shadow: var(--glass-shadow); text-align: center;}
+    .summary-title { font-size: 14px; font-weight: 700; color: var(--tab-bluegrey); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px; }
+    .summary-value { font-size: 32px; font-weight: 800; color: var(--text-darkgreen); margin-bottom: 5px;}
+    .text-danger { color: var(--danger-red); }
+    .text-success { color: var(--success-green); }
+
+    /* NHÓM CHI PHÍ (CATEGORIES) */
+    .category-group { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.02);}
+    .category-header { background: rgba(107, 132, 140, 0.15); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-khaki); cursor: pointer; transition: background 0.2s;}
+    .category-header:hover { background: rgba(107, 132, 140, 0.25); }
+    .cat-name { font-weight: 800; font-size: 16px; color: var(--text-darkgreen); display: flex; align-items: center; gap: 10px;}
+    .cat-totals { font-size: 14px; font-weight: 600; color: var(--tab-bluegrey); text-align: right;}
+    
+    /* BẢNG CHI TIẾT DỮ LIỆU */
+    .table-responsive { overflow-x: auto; width: 100%; display: block;}
+    table { width: 100%; border-collapse: collapse; text-align: left; min-width: 800px;}
+    th { background: rgba(255,255,255,0.5); font-size: 12px; text-transform: uppercase; font-weight: 700; color: var(--tab-bluegrey); padding: 12px 15px; border-bottom: 1px solid rgba(0,0,0,0.1); }
+    td { padding: 12px 15px; font-size: 14px; border-bottom: 1px solid rgba(0,0,0,0.05); vertical-align: middle; background: rgba(255,255,255,0.8);}
+    tr:hover td { background: #fff; }
+    
+    /* INPUT EDIT TRỰC TIẾP */
+    .edit-input { width: 100%; padding: 6px 10px; border: 1px solid transparent; background: transparent; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: var(--text-darkgreen); border-radius: 6px; box-sizing: border-box; transition: all 0.2s;}
+    .edit-input:hover { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.1); }
+    .edit-input:focus { outline: none; background: #fff; border-color: var(--btn-olive); box-shadow: 0 0 0 2px rgba(112, 145, 83, 0.2); }
+    .input-name { font-weight: 600; min-width: 250px;}
+    .input-money { font-family: 'Courier New', Courier, monospace; font-weight: 700; text-align: right; min-width: 130px; color: #333;}
+    .input-money:focus { text-align: left; }
+    
+    .variance-cell { font-family: 'Courier New', Courier, monospace; font-weight: 700; text-align: right; }
+    
+    /* NÚT THAO TÁC (ACTIONS) */
+    .btn-action { background: none; border: none; cursor: pointer; color: var(--tab-bluegrey); padding: 5px; border-radius: 6px; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center;}
+    .btn-action:hover { background: #FDEBD0; color: var(--danger-red); }
+    .btn-add-row { background: transparent; border: 1px dashed var(--tab-bluegrey); color: var(--tab-bluegrey); width: calc(100% - 30px); margin: 15px; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;}
+    .btn-add-row:hover { background: var(--text-darkgreen); color: #fff; border-color: var(--text-darkgreen); }
+
+    /* THÊM CSS CHO DÒNG CHI TIẾT (SUB-ITEMS) */
+    .sub-row { background: rgba(107, 132, 140, 0.05); }
+    .sub-table { width: 100%; border-collapse: collapse; margin: 10px 0; background: #fff; border-radius: 8px; overflow: hidden; border: 1px dashed var(--border-khaki); }
+    .sub-table th { background: rgba(107, 132, 140, 0.1); padding: 8px 15px; font-size: 11px; color: var(--text-darkgreen); }
+    .sub-table td { padding: 6px 15px; border-bottom: 1px solid rgba(0,0,0,0.03); }
+    .btn-expand { background: none; border: none; cursor: pointer; color: var(--btn-olive); font-size: 12px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-flex; align-items: center; gap: 4px; }
+    .btn-expand:hover { background: rgba(112, 145, 83, 0.1); }
+    .input-sub-desc { width: 100%; padding: 4px 8px; border: 1px solid transparent; border-bottom: 1px dashed #ccc; font-size: 13px; background: transparent; }
+    .input-sub-desc:focus { outline: none; border-bottom-color: var(--btn-olive); }
+
+    .toast { visibility: hidden; min-width: 250px; background: rgba(26, 53, 45, 0.95); color: #fff; text-align: center; border-radius: 12px; padding: 12px 20px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: bold; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: visibility 0.3s, opacity 0.3s;}
+    .toast.show { visibility: visible; opacity: 1; }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: var(--border-khaki); border-radius: 10px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>
+    <span style="font-size: 16px; font-weight: 600; color: var(--tab-bluegrey); display: block; margin-bottom: 5px;">THỰC TẾ CHI SO VỚI NGÂN SÁCH QUẢN TRỊ</span>
+    CAPEX TRACKER - THIRD PLACE
+  </h2>
+
+  <div class="summary-grid">
+    <div class="summary-card" style="border-top: 4px solid var(--border-khaki);">
+      <div class="summary-title">Tổng Ngân Sách Quản Trị</div>
+      <div class="summary-value" id="global-budget">3.400.000.000 đ</div>
+      <div style="font-size: 13px; color: var(--tab-bluegrey); margin-top: 8px;">Dựa trên phân bổ vốn ban đầu</div>
+    </div>
+    
+    <div class="summary-card" style="border-top: 4px solid var(--tab-bluegrey);">
+      <div class="summary-title">Tổng Chi Thực Tế (Phát sinh)</div>
+      <div class="summary-value" id="global-actual">0 đ</div>
+      <div style="font-size: 13px; color: var(--tab-bluegrey); margin-top: 8px;" id="global-actual-pct">0% so với dự kiến</div>
+    </div>
+    
+    <div class="summary-card" id="card-variance" style="border-top: 4px solid var(--success-green);">
+      <div class="summary-title">Quỹ dư / (Lạm chi)</div>
+      <div class="summary-value text-success" id="global-variance">0 đ</div>
+      <div style="font-size: 13px; font-weight: 600; margin-top: 8px;" id="global-variance-msg">Đang trong mức an toàn</div>
+    </div>
+  </div>
+
+  <div style="margin-bottom: 15px; font-size: 14px; font-weight: 600; color: var(--danger-red);">
+    💡 Hướng dẫn: Click trực tiếp vào Tên, Ngân sách hoặc Thực chi ở bảng dưới để chỉnh sửa con số.
+  </div>
+
+  <div id="capex-container">
+    <!-- Nội dung bảng sẽ được sinh ra từ JavaScript -->
+  </div>
+</div>
+
+<div id="toast" class="toast">Đã lưu thay đổi!</div>
+
+<script>
+  // DỮ LIỆU GỐC DỰA TRÊN 14 HẠNG MỤC TỪ CHỦ ĐẦU TƯ
+  let capexData = [
+    {
+      categoryId: 1,
+      categoryName: "1. Pháp lý, thiết kế, tư vấn, chuẩn bị",
+      items: [
+        { id: "1_1", name: "Thiết kế concept & layout", budget: 120000000, actual: 0 },
+        { id: "1_2", name: "Hồ sơ kỹ thuật & khảo sát đo đạc", budget: 30000000, actual: 0 },
+        { id: "1_3", name: "Tư vấn pháp lý & xin phép xây dựng", budget: 30000000, actual: 0 }
+      ]
+    },
+    {
+      categoryId: 2,
+      categoryName: "2. Xử lý hiện trạng, xây dựng, nền tảng",
+      items: [
+        { id: "2_1", name: "Đập phá, dọn dẹp, xử lý hiện trạng", budget: 50000000, actual: 0 },
+        { id: "2_2", name: "Xây tường, san nền, cầu thang, lửng", budget: 250000000, actual: 0 },
+        { id: "2_3", name: "Chống thấm & xử lý thoát nước nền", budget: 150000000, actual: 0 }
+      ]
+    },
+    {
+      categoryId: 3,
+      categoryName: "3. MEP, điện nước, điều hòa, hút mùi",
+      items: [
+        { id: "3_1", name: "Hệ thống điện & chiếu sáng kỹ thuật", budget: 120000000, actual: 0 },
+        { id: "3_2", name: "Cấp thoát nước tổng & Bẫy mỡ", budget: 80000000, actual: 0 },
+        { id: "3_3", name: "Hệ thống điều hòa không khí (AC)", budget: 150000000, actual: 0 },
+        { id: "3_4", name: "Hệ thống thông gió & hút mùi Bếp", budget: 50000000, actual: 0 }
+      ]
+    },
+    {
+      categoryId: 4,
+      categoryName: "4. Quầy bar, khu bếp, BOH cố định",
+      items: [
+        { id: "4_1", name: "Hệ quầy Bar cố định & mặt đá", budget: 120000000, actual: 0 },
+        { id: "4_2", name: "Hệ quầy Bếp, khu prep, khu rửa", budget: 150000000, actual: 0 },
+        { id: "4_3", name: "Kho, BOH & các kệ gắn tường", budget: 80000000, actual: 0 }
+      ]
+    },
+    {
+      categoryId: 5,
+      categoryName: "5. Hoàn thiện indoor",
+      items: [
+        { id: "5_1", name: "Hoàn thiện trần, tường, sàn, sơn", budget: 150000000, actual: 0 },
+        { id: "5_2", name: "Cửa kính, vách ngăn", budget: 80000000, actual: 0 },
+        { id: "5_3", name: "Đèn decor, banquette, nội thất cố định", budget: 70000000, actual: 0 }
+      ]
+    },
+    {
+      categoryId: 6,
+      categoryName: "6. Outdoor, sân vườn, façade, bảng hiệu",
+      items: [
+        { id: "6_1", name: "Cải tạo Façade mặt tiền", budget: 150000000, actual: 0 },
+        { id: "6_2", name: "Cây xanh, chậu cây, thoát nước sân", budget: 100000000, actual: 0 },
+        { id: "6_3", name: "Mái che nhẹ ngoài trời", budget: 50000000, actual: 0 },
+        { id: "6_4", name: "Bảng hiệu & nhận diện mặt tiền", budget: 50000000, actual: 0 }
+      ]
+    },
+    {
+      categoryId: 7,
+      categoryName: "7. Thiết bị coffee/bar",
+      items: [
+        { id: "7_1", name: "Máy pha & Máy xay Espresso", budget: 180000000, actual: 0 },
+        { id: "7_2", name: "Máy làm đá & Lọc nước", budget: 50000000, actual: 0 },
+        { id: "7_3", name: "Tủ mát quầy bar", budget: 30000000, actual: 0 },
+        { id: "7_4", name: "Dụng cụ bar chuyên môn (Cân, Kettle...)", budget: 40000000, actual: 0 }
+      ]
+    },
+    {
+      categoryId: 8,
+      categoryName: "8. Thiết bị bếp brunch/món nóng",
+      items: [
+        { id: "8_1", name: "Bếp nấu, lò nướng, máy nướng", budget: 120000000, actual: 0 },
+        { id: "8_2", name: "Tủ lạnh, tủ đông, bàn mát", budget: 100000000, actual: 0 },
+        { id: "8_3", name: "Thiết bị sơ chế & bảo quản", budget: 40000000, actual: 0 },
+        { id: "8_4", name: "Thiết bị rửa & dụng cụ bếp chính", budget: 40000000, actual: 0 }
+      ]
+    },
+    {
+      categoryId: 9,
+      categoryName: "9. Bàn ghế, nội thất rời, dụng cụ",
+      items: [
+        { id: "9_1", name: "Bàn ghế Indoor / Work lounge", budget: 150000000, actual: 0 },
+        { id: "9_2", name: "Bàn ghế Outdoor / Ghế bar", budget: 100000000, actual: 0 },
+        { id: "9_3", name: "Ly, đĩa, dao nĩa, khay, thùng rác", budget: 60000000, actual: 0 }
+      ]
+    },
+    {
+      categoryId: 10,
+      categoryName: "10. POS, camera, Wi-Fi, âm thanh",
+      items: [
+        { id: "10_1", name: "Phần mềm POS & Máy in bill", budget: 30000000, actual: 0 },
+        { id: "10_2", name: "Hệ thống Camera an ninh", budget: 20000000, actual: 0 },
+        { id: "10_3", name: "Wi-Fi router chịu tải & Mạng", budget: 20000000, actual: 0 },
+        { id: "10_4", name: "Hệ thống âm thanh tổng", budget: 30000000, actual: 0 }
+      ]
+    },
+    {
+      categoryId: 11,
+      categoryName: "11. Chi phí trước khai trương (Pre-opening)",
+      items: [
+        { id: "11_1", name: "Tuyển dụng & Training nhân sự", budget: 50000000, actual: 0 },
+        { id: "11_2", name: "Đồng phục, chụp ảnh, in menu", budget: 50000000, actual: 0 },
+        { id: "11_3", name: "Bao bì đóng gói đợt 1", budget: 40000000, actual: 0 },
+        { 
+          id: "11_4", 
+          name: "Nguyên vật liệu R&D & Soft Opening", 
+          budget: 60000000, 
+          actual: 0,
+          // THÊM MẢNG DETAILS ĐỂ LƯU CHI TIẾT CÁC LẦN MUA
+          details: [
+            { id: "d1", desc: "Test hạt cà phê đợt 1 (15/07)", amount: 2500000 },
+            { id: "d2", desc: "Thịt/Cá test món Âu (18/07)", amount: 4200000 }
+          ] 
+        }
+      ]
+    },
+    {
+      categoryId: 12,
+      categoryName: "12. Marketing khai trương",
+      items: [
+        { id: "12_1", name: "Thiết kế Branding ứng dụng", budget: 40000000, actual: 0 },
+        { id: "12_2", name: "KOL/KOC, Content & Ads Launching", budget: 50000000, actual: 0 },
+        { id: "12_3", name: "POSM & Signage phụ", budget: 30000000, actual: 0 }
+      ]
+    },
+    {
+      categoryId: 13,
+      categoryName: "13. Vốn lưu động ban đầu (Working Capital)",
+      items: [
+        { id: "13_1", name: "Tiền cọc Hợp đồng thuê mặt bằng (Deposit)", budget: 200000000, actual: 0 },
+        { id: "13_2", name: "Tiền thuê trả trước kỳ đầu (3-6 tháng)", budget: 300000000, actual: 0 },
+        { id: "13_3", name: "Lương quỹ đầu, setup, điện nước 2 tháng đầu", budget: 150000000, actual: 0 },
+        { id: "13_4", name: "Công nợ dự phòng nhà cung cấp & NVL", budget: 100000000, actual: 0 }
+      ]
+    },
+    {
+      categoryId: 14,
+      categoryName: "14. Dự phòng phát sinh (Contingency)",
+      items: [
+        { id: "14_1", name: "Phát sinh thi công & thay đổi thiết kế", budget: 150000000, actual: 0 },
+        { id: "14_2", name: "Tăng giá thiết bị / lỗi kỹ thuật", budget: 70000000, actual: 0 }
+      ]
+    }
+  ];
+
+  // Hàm format tiền tệ (VND)
+  function formatVND(amount) {
+    return new Intl.NumberFormat('vi-VN').format(amount);
+  }
+
+  // Hàm chuyển string dạng "1.500.000" về số nguyên
+  function parseVND(str) {
+    if(!str) return 0;
+    return parseInt(str.toString().replace(/[^\d]/g, ''), 10) || 0;
+  }
+
+  // Hiển thị thông báo (Toast)
+  function showToast(msg) {
+    const toast = document.getElementById("toast");
+    toast.innerText = msg;
+    toast.className = "toast show";
+    setTimeout(() => { toast.className = "toast"; }, 2000);
+  }
+
+  function renderApp() {
+    const container = document.getElementById('capex-container');
+    container.innerHTML = '';
+
+    let globalBudget = 0;
+    let globalActual = 0;
+
+    capexData.forEach((category, catIndex) => {
+      let catBudget = 0;
+      let catActual = 0;
+
+      let itemsHtml = '';
+      category.items.forEach((item, itemIndex) => {
+        
+        // KIỂM TRA VÀ TÍNH AUTO-SUM NẾU CÓ SUB-ITEMS
+        let hasDetails = item.details && item.details.length > 0;
+        if (hasDetails) {
+          item.actual = item.details.reduce((sum, d) => sum + (d.amount || 0), 0);
+        }
+
+        catBudget += item.budget;
+        catActual += item.actual;
+
+        let variance = item.budget - item.actual;
+        let varColor = variance >= 0 ? 'color: var(--success-green);' : 'color: var(--danger-red);';
+        let varPrefix = variance > 0 ? '+' : '';
+        if(item.actual === 0) variance = 0; 
+        let displayVariance = item.actual === 0 ? "-" : `${varPrefix}${formatVND(variance)}`;
+
+        // HTML CHO DÒNG CHA
+        itemsHtml += `
+          <tr>
+            <td>
+              <input type="text" class="edit-input input-name" value="${item.name}" 
+                onblur="updateItem('${catIndex}', '${itemIndex}', 'name', this.value)">
+              <button class="btn-expand" onclick="toggleSubRow('sub-${item.id}')">
+                ⊞ Chi tiết (${item.details ? item.details.length : 0} GD)
+              </button>
+            </td>
+            <td>
+              <input type="text" class="edit-input input-money" value="${formatVND(item.budget)}" 
+                onfocus="this.value = '${item.budget}'"
+                onblur="updateItem('${catIndex}', '${itemIndex}', 'budget', this.value)">
+            </td>
+            <td>
+              <input type="text" class="edit-input input-money" style="${hasDetails ? 'background: rgba(0,0,0,0.05); color: #888;' : ''}" 
+                value="${item.actual === 0 ? '' : formatVND(item.actual)}" placeholder="Nhập thực chi..."
+                ${hasDetails ? 'readonly title="Đang cộng dồn từ chi tiết bên dưới"' : `onfocus="this.value = '${item.actual === 0 ? '' : item.actual}'" onblur="updateItem('${catIndex}', '${itemIndex}', 'actual', this.value)"`}>
+            </td>
+            <td class="variance-cell" style="${item.actual !== 0 ? varColor : 'color: #999;'}">${displayVariance}</td>
+            <td style="text-align: center; width: 40px;">
+              <button class="btn-action" title="Xóa dòng" onclick="deleteItem('${catIndex}', '${itemIndex}')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+              </button>
+            </td>
+          </tr>
+        `;
+
+        // HTML CHO DÒNG CON (SUB-ITEMS BỊ ẨN MẶC ĐỊNH)
+        let subItemsHtml = '';
+        if (item.details) {
+          item.details.forEach((detail, dIndex) => {
+            subItemsHtml += `
+              <tr>
+                <td><input type="text" class="input-sub-desc" value="${detail.desc}" placeholder="Nhập tên bill / đợt mua..." onblur="updateDetail('${catIndex}', '${itemIndex}', '${dIndex}', 'desc', this.value)"></td>
+                <td style="width: 150px;"><input type="text" class="input-sub-desc" style="text-align:right; font-family: monospace; font-weight: bold;" value="${formatVND(detail.amount)}" onfocus="this.value='${detail.amount}'" onblur="updateDetail('${catIndex}', '${itemIndex}', '${dIndex}', 'amount', this.value)"></td>
+                <td style="width: 40px; text-align: center;"><button class="btn-action" style="padding: 2px; color: var(--danger-red);" onclick="deleteDetail('${catIndex}', '${itemIndex}', '${dIndex}')">✖</button></td>
+              </tr>
+            `;
+          });
+        }
+
+        itemsHtml += `
+          <tr id="sub-${item.id}" class="sub-row" style="display: none;">
+            <td colspan="5" style="padding: 0 15px 15px 40px;">
+              <div style="font-size: 12px; font-weight: bold; color: var(--tab-bluegrey); margin-top: 10px;">↘ BẢNG LIỆT KÊ CHI TIẾT ĐẦU VIỆC</div>
+              <table class="sub-table">
+                <thead><tr><th>Nội dung thanh toán / Diễn giải</th><th style="text-align:right;">Số tiền (đ)</th><th></th></tr></thead>
+                <tbody>${subItemsHtml}</tbody>
+              </table>
+              <button class="btn-expand" style="margin-top: 0;" onclick="addDetail('${catIndex}', '${itemIndex}')">+ Thêm bill/giao dịch mới</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      globalBudget += catBudget;
+      globalActual += catActual;
+
+      // Sinh bảng giao diện cho từng Nhóm
+      let categoryHtml = `
+        <div class="category-group">
+          <div class="category-header" onclick="toggleCat('cat-body-${catIndex}')">
+            <div class="cat-name">${category.categoryName}</div>
+            <div class="cat-totals">
+              Dự kiến: <span style="color: var(--text-darkgreen); margin-right: 15px;">${formatVND(catBudget)} đ</span>
+              Thực tế: <span style="color: var(--danger-red);">${formatVND(catActual)} đ</span>
+            </div>
+          </div>
+          <div id="cat-body-${catIndex}" style="display: block;">
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Hạng mục chi tiết (Sửa được)</th>
+                    <th style="text-align: right; width: 18%;">Ngân sách dự kiến</th>
+                    <th style="text-align: right; width: 18%;">Thực chi (Hợp đồng)</th>
+                    <th style="text-align: right; width: 15%;">Chênh lệch</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${itemsHtml}
+                </tbody>
+              </table>
+            </div>
+            <button class="btn-add-row" onclick="addItem('${catIndex}')">+ Thêm dòng mới</button>
+          </div>
+        </div>
+      `;
+      container.innerHTML += categoryHtml;
+    });
+
+    updateGlobalSummaries(globalBudget, globalActual);
+  }
+
+  function updateGlobalSummaries(budget, actual) {
+    document.getElementById('global-budget').innerText = formatVND(budget) + ' đ';
+    document.getElementById('global-actual').innerText = formatVND(actual) + ' đ';
+    
+    let percentUsed = budget > 0 ? Math.round((actual / budget) * 100) : 0;
+    document.getElementById('global-actual-pct').innerText = `${percentUsed}% so với tổng dự kiến`;
+
+    let totalVariance = budget - actual;
+    let varEl = document.getElementById('global-variance');
+    let varMsg = document.getElementById('global-variance-msg');
+    let cardVar = document.getElementById('card-variance');
+
+    varEl.innerText = formatVND(Math.abs(totalVariance)) + ' đ';
+
+    if (totalVariance >= 0) {
+      varEl.className = 'summary-value text-success';
+      varMsg.innerText = "Dòng tiền an toàn (Không lạm chi) 🟢";
+      cardVar.style.borderTop = "4px solid var(--success-green)";
+    } else {
+      varEl.className = 'summary-value text-danger';
+      varMsg.innerText = "CẢNH BÁO: Thực chi đang lố Ngân sách! 🔴";
+      cardVar.style.borderTop = "4px solid var(--danger-red)";
+    }
+  }
+
+  function updateItem(catIndex, itemIndex, field, value) {
+    let item = capexData[catIndex].items[itemIndex];
+    let isChanged = false;
+
+    if (field === 'name' && item.name !== value) {
+      item.name = value;
+      isChanged = true;
+    } else if (field === 'budget') {
+      let num = parseVND(value);
+      if (item.budget !== num) { item.budget = num; isChanged = true; }
+    } else if (field === 'actual') {
+      let num = parseVND(value);
+      if (item.actual !== num) { item.actual = num; isChanged = true; }
+    }
+
+    if(isChanged) {
+      renderApp();
+      showToast("Đã tính toán lại dữ liệu!");
+    } else {
+      // Re-render để trả lại định dạng (có dấu phẩy) nếu user không thay đổi
+      renderApp();
+    }
+  }
+
+  function addItem(catIndex) {
+    let newItem = {
+      id: Date.now().toString(),
+      name: "Hạng mục phát sinh mới...",
+      budget: 0,
+      actual: 0
+    };
+    capexData[catIndex].items.push(newItem);
+    renderApp();
+    showToast("Đã thêm dòng mới. Vui lòng nhập dữ liệu.");
+  }
+
+  function deleteItem(catIndex, itemIndex) {
+    if(confirm("Bạn có chắc chắn muốn xóa hạng mục này khỏi bảng ngân sách?")) {
+      capexData[catIndex].items.splice(itemIndex, 1);
+      renderApp();
+      showToast("Đã xóa hạng mục.");
+    }
+  }
+
+  function toggleCat(id) {
+    let el = document.getElementById(id);
+    if(el.style.display === 'none') {
+      el.style.display = 'block';
+    } else {
+      el.style.display = 'none';
+    }
+  }
+
+  // --- CÁC HÀM XỬ LÝ SUB-ITEMS ---
+  function toggleSubRow(id) {
+    let el = document.getElementById(id);
+    if(el.style.display === 'none') el.style.display = 'table-row';
+    else el.style.display = 'none';
+  }
+
+  function addDetail(catIndex, itemIndex) {
+    let item = capexData[catIndex].items[itemIndex];
+    if (!item.details) item.details = [];
+    item.details.push({ id: "d_" + Date.now(), desc: "", amount: 0 });
+    renderApp();
+    // Mở sẵn dòng sổ xuống sau khi thêm
+    document.getElementById(`sub-${item.id}`).style.display = 'table-row';
+  }
+
+  function updateDetail(catIndex, itemIndex, detailIndex, field, value) {
+    let detail = capexData[catIndex].items[itemIndex].details[detailIndex];
+    let isChanged = false;
+
+    if (field === 'desc' && detail.desc !== value) {
+      detail.desc = value; isChanged = true;
+    } else if (field === 'amount') {
+      let num = parseVND(value);
+      if (detail.amount !== num) { detail.amount = num; isChanged = true; }
+    }
+
+    if (isChanged) {
+      renderApp();
+      // Giữ trạng thái mở của dòng sổ xuống
+      document.getElementById(`sub-${capexData[catIndex].items[itemIndex].id}`).style.display = 'table-row';
+    } else {
+      renderApp();
+      document.getElementById(`sub-${capexData[catIndex].items[itemIndex].id}`).style.display = 'table-row';
+    }
+  }
+
+  function deleteDetail(catIndex, itemIndex, detailIndex) {
+    let item = capexData[catIndex].items[itemIndex];
+    item.details.splice(detailIndex, 1);
+    renderApp();
+    document.getElementById(`sub-${item.id}`).style.display = 'table-row';
+  }
+
+  // Khởi động App
+  window.onload = () => {
+    renderApp();
+  };
+</script>
+
+</body>
+</html>

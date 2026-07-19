@@ -107,6 +107,7 @@
   <h2>
     <span style="font-size: 16px; font-weight: 600; color: var(--tab-bluegrey); display: block; margin-bottom: 5px;">THỰC TẾ CHI SO VỚI NGÂN SÁCH QUẢN TRỊ</span>
     CAPEX TRACKER - THIRD PLACE
+    <button id="btn-unlock" onclick="unlockCapex()" style="display: block; margin: 15px auto 0; padding: 8px 20px; background: var(--text-darkgreen); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: all 0.3s;">🔒 BẤM ĐỂ MỞ KHÓA CHỈNH SỬA</button>
   </h2>
 
   <!-- THẺ TỔNG QUAN DÒNG TIỀN -->
@@ -147,6 +148,8 @@
   // 🔴 THAY BẰNG LINK WEB APP CỦA BẠN (CODE.GS MỚI) VÀO ĐÂY
   const API_URL = "https://script.google.com/macros/s/AKfycbz93j2C3W27swxCDnQB4cNlmPls1PJ4tClHsrpshYwA_RyixLhw635fSsU94UD8jl6K0g/exec";
   const ADMIN_PIN = "528689";
+
+  let isCapexUnlocked = false; // Biến kiểm soát trạng thái khóa
 
   // Cấu trúc Data Base cục bộ (Sẽ được đổ dữ liệu từ API vào đây)
   let capexData = [
@@ -193,6 +196,18 @@
     el.style.display = (el.style.display === 'none') ? 'table-row' : 'none';
   }
 
+  function unlockCapex() {
+    const pin = prompt("Bảo mật: Vui lòng nhập mã PIN Admin (Gợi ý: 528689) để mở khóa chỉnh sửa bảng Ngân sách:");
+    if (pin === ADMIN_PIN) {
+        isCapexUnlocked = true;
+        showToast("Đã mở khóa chỉnh sửa!");
+        document.getElementById('btn-unlock').style.display = 'none';
+        renderApp(); // Render lại bảng để mở khóa các ô input và hiện nút thêm/xóa
+    } else {
+        if (pin !== null) showToast("Sai mã PIN! Không thể mở khóa.");
+    }
+  }
+
   function renderApp() {
     const container = document.getElementById('capex-container');
     container.innerHTML = '';
@@ -207,7 +222,6 @@
 
       category.items.forEach((item, itemIndex) => {
         // TÍNH NĂNG 1: AUTO-SUM 
-        // Nếu có Sub-items, tự động cộng dồn và ép Actual của Cha = Tổng Con
         let hasSubItems = item.details && item.details.length > 0;
         if (hasSubItems) {
           item.actual = item.details.reduce((sum, d) => sum + (d.amount || 0), 0);
@@ -222,11 +236,15 @@
         if (item.actual === 0) variance = 0; 
         let displayVariance = item.actual === 0 ? "-" : `${varPrefix}${formatVND(variance)}`;
 
+        // Xác định trạng thái Read-only dựa vào biến isCapexUnlocked
+        let lockedAttr = isCapexUnlocked ? '' : 'readonly title="Đang ở chế độ Read-only. Vui lòng bấm Mở Khóa ở trên!"';
+        let actualLockedAttr = (hasSubItems || !isCapexUnlocked) ? 'readonly title="Bị khóa (Do Auto-sum hoặc chế độ Read-only)"' : `onfocus="this.value = '${item.actual === 0 ? '' : item.actual}'" onblur="updateItem('${catIndex}', '${itemIndex}', 'actual', this.value)"`;
+
         // HTML CHO DÒNG CHA (THÔNG MINH)
         itemsHtml += `
           <tr>
             <td>
-              <input type="text" class="edit-input input-name" value="${item.name}" 
+              <input type="text" class="edit-input input-name" value="${item.name}" ${lockedAttr}
                 onblur="updateItem('${catIndex}', '${itemIndex}', 'name', this.value)">
               <br>
               <button class="btn-expand" onclick="toggleSubRow('sub-${item.id}')">
@@ -234,16 +252,16 @@
               </button>
             </td>
             <td>
-              <input type="text" class="edit-input input-money" value="${formatVND(item.budget)}" 
+              <input type="text" class="edit-input input-money" value="${formatVND(item.budget)}" ${lockedAttr}
                 onfocus="this.value = '${item.budget}'"
                 onblur="updateItem('${catIndex}', '${itemIndex}', 'budget', this.value)">
             </td>
             <td>
-              <!-- TÍNH NĂNG 2: READ-ONLY NẾU CÓ BILL PHỤ -->
+              <!-- TÍNH NĂNG 2: READ-ONLY NẾU BỊ KHÓA HOẶC CÓ BILL PHỤ -->
               <input type="text" class="edit-input input-money" 
                 value="${item.actual === 0 ? '' : formatVND(item.actual)}" 
                 placeholder="Nhập thực chi..."
-                ${hasSubItems ? 'readonly title="Đã bị khóa. Bảng đang tự cộng dồn từ các hóa đơn con bên dưới!"' : `onfocus="this.value = '${item.actual === 0 ? '' : item.actual}'" onblur="updateItem('${catIndex}', '${itemIndex}', 'actual', this.value)"`}>
+                ${actualLockedAttr}>
             </td>
             <td class="variance-cell" style="${item.actual !== 0 ? varColor : 'color: #999;'}">${displayVariance}</td>
           </tr>
@@ -253,18 +271,23 @@
         let subItemsHtml = '';
         if (hasSubItems) {
           item.details.forEach((detail, dIndex) => {
+            // Nút Xóa chỉ hiện khi đã mở khóa
+            let btnXoaHtml = isCapexUnlocked ? `<button class="btn-action" style="padding: 4px; color: var(--danger-red); font-size:16px;" onclick="deleteDetail('${detail.id}')" title="Xóa bill này">🗑️</button>` : '';
+            
             subItemsHtml += `
               <tr>
-                <td><input type="text" class="input-sub-desc" value="${detail.desc}" placeholder="Nhập tên mặt hàng / đợt mua..." onblur="updateDetail('${catIndex}', '${itemIndex}', '${dIndex}', 'desc', this.value)"></td>
-                <td style="width: 150px;"><input type="text" class="input-sub-desc" style="text-align:right; font-family: monospace; font-weight: bold;" value="${formatVND(detail.amount)}" onfocus="this.value='${detail.amount}'" onblur="updateDetail('${catIndex}', '${itemIndex}', '${dIndex}', 'amount', this.value)"></td>
+                <td><input type="text" class="input-sub-desc" value="${detail.desc}" placeholder="Nhập tên mặt hàng / đợt mua..." ${lockedAttr} onblur="updateDetail('${catIndex}', '${itemIndex}', '${dIndex}', 'desc', this.value)"></td>
+                <td style="width: 150px;"><input type="text" class="input-sub-desc" style="text-align:right; font-family: monospace; font-weight: bold;" value="${formatVND(detail.amount)}" ${lockedAttr} onfocus="this.value='${detail.amount}'" onblur="updateDetail('${catIndex}', '${itemIndex}', '${dIndex}', 'amount', this.value)"></td>
                 <td style="width: 50px; text-align: center;">
-                  <!-- NÚT XÓA TÍCH HỢP MÃ PIN -->
-                  <button class="btn-action" style="padding: 4px; color: var(--danger-red); font-size:16px;" onclick="deleteDetail('${detail.id}')" title="Xóa bill này">🗑️</button>
+                  ${btnXoaHtml}
                 </td>
               </tr>
             `;
           });
         }
+
+        // Ẩn nút Thêm Bill nếu chưa mở khóa
+        let btnAddBillHtml = isCapexUnlocked ? `<button class="btn-expand" style="margin-top: 0; background: #e8f4f8;" onclick="addDetail('${catIndex}', '${itemIndex}')">+ Thêm bill/giao dịch mới</button>` : `<div style="font-size:11px; color:#888; margin-top:5px; font-style:italic;">(Chế độ xem - Đã khóa thêm mới)</div>`;
 
         itemsHtml += `
           <tr id="sub-${item.id}" class="sub-row" style="display: none;">
@@ -274,7 +297,7 @@
                 <thead><tr><th>Nội dung thanh toán / Diễn giải</th><th style="text-align:right;">Số tiền (đ)</th><th>Xóa</th></tr></thead>
                 <tbody>${subItemsHtml}</tbody>
               </table>
-              <button class="btn-expand" style="margin-top: 0; background: #e8f4f8;" onclick="addDetail('${catIndex}', '${itemIndex}')">+ Thêm bill/giao dịch mới</button>
+              ${btnAddBillHtml}
             </td>
           </tr>
         `;
@@ -283,8 +306,11 @@
       globalBudget += catBudget;
       globalActual += catActual;
 
+      // Ẩn nút Thêm Dòng (Hạng mục chính) nếu chưa mở khóa
+      let btnAddRowHtml = isCapexUnlocked ? `<button class="btn-add-row" onclick="addMainRow('${catIndex}')">+ Thêm dòng Hạng mục mới vào nhóm này</button>` : '';
+
       // HTML CHO KHỐI CATEGORY LỚN
-      if (category.items.length > 0) {
+      if (category.items.length > 0 || isCapexUnlocked) {
         let categoryHtml = `
           <div class="category-group">
             <div class="category-header" onclick="toggleCat('cat-body-${catIndex}')">
@@ -310,7 +336,7 @@
                   </tbody>
                 </table>
               </div>
-              <button class="btn-add-row" onclick="addMainRow('${catIndex}')">+ Thêm dòng Hạng mục mới vào nhóm này</button>
+              ${btnAddRowHtml}
             </div>
           </div>
         `;

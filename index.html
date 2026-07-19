@@ -942,24 +942,44 @@
         try {
             await fetch(API_URL, {
                 method: 'POST', redirect: 'follow', headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: 'updateCapex', id: item.id, actualAmount: item.actual, note: item.name })
+                body: JSON.stringify({ action: 'updateCapex', id: item.id, itemName: item.name, budget: item.budget, actualAmount: item.actual })
             });
-            showToast("Đã lưu ngân sách!");
+            showToast("Đã lưu dữ liệu ngân sách!");
         } catch(e) {
             console.error(e);
         }
     }
   }
 
-  function addCapexItem(catIndex) {
+  async function addCapexItem(catIndex) {
+    let category = mockData.capexCategories[catIndex];
     let newItem = {
       id: "C_NEW_" + Date.now(),
       name: "Hạng mục phát sinh mới...",
       budget: 0,
-      actual: 0
+      actual: 0,
+      subItems: []
     };
-    mockData.capexCategories[catIndex].items.push(newItem);
+    category.items.push(newItem);
     renderCapex();
+
+    // Gọi API để tạo ngay 1 hàng (row) mới trên Google Sheets
+    showToast("Đang khởi tạo trên Google Sheets...");
+    try {
+        await fetch(API_URL, {
+            method: 'POST', redirect: 'follow', headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ 
+                action: 'addMainCapex', 
+                id: newItem.id, 
+                groupName: category.name, 
+                itemName: newItem.name 
+            })
+        });
+        showToast("Đã thêm hạng mục mới thành công!");
+    } catch(e) { 
+        console.error(e); 
+        showToast("Lỗi kết nối khi tạo hạng mục.");
+    }
   }
 
   function deleteCapexItem(catIndex, itemIndex) {

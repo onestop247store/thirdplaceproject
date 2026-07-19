@@ -487,7 +487,16 @@
         id: "C11", name: "11. Chi phí trước khai trương (Pre-opening)", budget: 180000000,
         items: [
           { id: "C11_1", name: "Tuyển dụng, training, đồng phục", budget: 60000000, actual: 0 },
-          { id: "C11_2", name: "Nguyên vật liệu R&D & Chạy thử", budget: 120000000, actual: 0, subItems: [] }
+          { 
+            id: "C11_2", 
+            name: "Nguyên vật liệu R&D & Chạy thử", 
+            budget: 120000000, 
+            actual: 6700000, 
+            subItems: [
+              { id: "d1", desc: "Hạt cafe đợt 1", amount: 2500000 },
+              { id: "d2", desc: "Thịt bò test đợt 3", amount: 4200000 }
+            ] 
+          }
         ]
       },
       {
@@ -988,8 +997,17 @@
     item.actual = item.subItems.reduce((sum, d) => sum + (d.amount || 0), 0);
 
     renderCapex();
+    // Giữ cho bảng con vẫn mở sau khi gõ xong
     document.getElementById(`sub-${item.id}`).style.display = 'table-row';
-    updateCapexItem(catIndex, itemIndex, 'actual', item.actual); // Gọi lại hàm trên để Sync API
+    
+    // 1. Đồng bộ tổng tiền lên dòng Cha
+    updateCapexItem(catIndex, itemIndex, 'actual', item.actual); 
+
+    // 2. Đồng bộ thẳng nội dung Bill và Số tiền của dòng Con xuống Google Sheets
+    fetch(API_URL, {
+        method: 'POST', redirect: 'follow', headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: 'updateCapex', id: detail.id, actualAmount: detail.amount, note: detail.desc })
+    }).catch(e => console.error(e));
   }
 
   async function submitUpdate(taskId, status) {

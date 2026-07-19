@@ -89,6 +89,17 @@
     .toast { visibility: hidden; min-width: 250px; background: rgba(26, 53, 45, 0.95); color: #fff; text-align: center; border-radius: 12px; padding: 12px 20px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: bold; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: visibility 0.3s, opacity 0.3s;}
     .toast.show { visibility: visible; opacity: 1; }
 
+    /* CSS CHO CUSTOM MODAL (POP-UP) BẢO MẬT & XÁC NHẬN */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(26, 53, 45, 0.6); backdrop-filter: blur(5px); z-index: 2000; justify-content: center; align-items: center; }
+    .custom-modal { background: var(--bg-cream); padding: 30px; border-radius: 20px; box-shadow: 0 15px 50px rgba(0,0,0,0.3); max-width: 350px; width: 90%; text-align: center; border: 1px solid var(--glass-border); transform: scale(0.9); animation: modalIn 0.2s forwards ease-out; }
+    @keyframes modalIn { to { transform: scale(1); } }
+    .btn-modal-cancel { background: rgba(0,0,0,0.05); color: var(--tab-bluegrey); border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: background 0.2s; font-size: 14px;}
+    .btn-modal-cancel:hover { background: rgba(0,0,0,0.1); }
+    .btn-modal-submit { background: var(--text-darkgreen); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: background 0.2s; font-size: 14px;}
+    .btn-modal-submit:hover { background: #122620; }
+    #pin-modal-input { text-align: center; font-size: 28px; letter-spacing: 8px; width: 160px; margin: 0 auto 25px; display: block; padding: 12px; border-radius: 12px; border: 2px solid var(--border-khaki); outline: none; font-family: monospace; color: var(--text-darkgreen); background: rgba(255,255,255,0.8);}
+    #pin-modal-input:focus { border-color: var(--btn-olive); box-shadow: 0 0 0 3px rgba(112, 145, 83, 0.2); }
+
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: var(--border-khaki); border-radius: 10px; }
@@ -138,6 +149,33 @@
   <div id="capex-container">
     <div style="text-align: center; padding: 40px; color: #888; font-style: italic;">
       ⏳ Đang tải dữ liệu ngân sách từ Google Sheets...
+    </div>
+  </div>
+</div>
+
+<!-- MODAL XÁC NHẬN MÃ PIN CUSTOM -->
+<div id="pin-modal" class="modal-overlay">
+  <div class="custom-modal">
+    <div style="font-size: 40px; margin-bottom: 10px;">🔒</div>
+    <h3 style="margin-top:0; color: var(--text-darkgreen); font-size: 18px;">BẢO MẬT HỆ THỐNG</h3>
+    <p id="pin-modal-msg" style="font-size: 14px; color: var(--tab-bluegrey); margin-bottom: 20px; line-height: 1.5;">Vui lòng nhập mã PIN Admin để tiếp tục:</p>
+    <input type="password" id="pin-modal-input" placeholder="******" maxlength="6">
+    <div style="display: flex; gap: 10px; justify-content: center;">
+      <button id="pin-modal-cancel" class="btn-modal-cancel">Hủy</button>
+      <button id="pin-modal-submit" class="btn-modal-submit">Xác nhận</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL XÁC NHẬN HÀNH ĐỘNG CUSTOM (XÓA) -->
+<div id="confirm-modal" class="modal-overlay">
+  <div class="custom-modal">
+    <div style="font-size: 40px; margin-bottom: 10px;">⚠️</div>
+    <h3 style="margin-top:0; color: var(--danger-red); font-size: 18px;">XÁC NHẬN XÓA</h3>
+    <p id="confirm-modal-msg" style="font-size: 14px; color: var(--text-darkgreen); margin-bottom: 25px; line-height: 1.5;">Bạn có chắc chắn muốn thực hiện hành động này?</p>
+    <div style="display: flex; gap: 10px; justify-content: center;">
+      <button id="confirm-modal-cancel" class="btn-modal-cancel">Hủy</button>
+      <button id="confirm-modal-submit" style="background: var(--danger-red); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px;">Đồng ý Xóa</button>
     </div>
   </div>
 </div>
@@ -196,15 +234,85 @@
     el.style.display = (el.style.display === 'none') ? 'table-row' : 'none';
   }
 
-  function unlockCapex() {
-    const pin = prompt("Bảo mật: Vui lòng nhập mã PIN Admin (Gợi ý: 528689) để mở khóa chỉnh sửa bảng Ngân sách:");
+  // --- BỘ HÀM QUẢN LÝ CUSTOM MODAL BẤT ĐỒNG BỘ ---
+  function openPinModal(message) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('pin-modal');
+        const msgEl = document.getElementById('pin-modal-msg');
+        const input = document.getElementById('pin-modal-input');
+        const btnSubmit = document.getElementById('pin-modal-submit');
+        const btnCancel = document.getElementById('pin-modal-cancel');
+
+        msgEl.innerHTML = message;
+        input.value = '';
+        modal.style.display = 'flex';
+        input.focus();
+
+        const cleanup = () => {
+            btnSubmit.onclick = null;
+            btnCancel.onclick = null;
+            input.onkeyup = null;
+            modal.style.display = 'none';
+        };
+
+        btnSubmit.onclick = () => {
+            const val = input.value;
+            cleanup();
+            resolve(val);
+        };
+
+        btnCancel.onclick = () => {
+            cleanup();
+            resolve(null);
+        };
+
+        // Hỗ trợ bấm phím Enter để Submit
+        input.onkeyup = (e) => {
+            if(e.key === 'Enter') btnSubmit.click();
+        };
+    });
+  }
+
+  function openConfirmModal(message) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('confirm-modal');
+        const msgEl = document.getElementById('confirm-modal-msg');
+        const btnSubmit = document.getElementById('confirm-modal-submit');
+        const btnCancel = document.getElementById('confirm-modal-cancel');
+
+        msgEl.innerHTML = message;
+        modal.style.display = 'flex';
+
+        const cleanup = () => {
+            btnSubmit.onclick = null;
+            btnCancel.onclick = null;
+            modal.style.display = 'none';
+        };
+
+        btnSubmit.onclick = () => {
+            cleanup();
+            resolve(true);
+        };
+
+        btnCancel.onclick = () => {
+            cleanup();
+            resolve(false);
+        };
+    });
+  }
+  // --- KẾT THÚC BỘ HÀM CUSTOM MODAL ---
+
+  async function unlockCapex() {
+    const pin = await openPinModal("Khu vực giới hạn.<br>Vui lòng nhập mã PIN Quản trị để mở khóa chỉnh sửa bảng Ngân sách:");
+    if (pin === null) return; // Người dùng bấm Hủy
+    
     if (pin === ADMIN_PIN) {
         isCapexUnlocked = true;
-        showToast("Đã mở khóa chỉnh sửa!");
+        showToast("🔓 Đã mở khóa chỉnh sửa thành công!");
         document.getElementById('btn-unlock').style.display = 'none';
-        renderApp(); // Render lại bảng để mở khóa các ô input và hiện nút thêm/xóa
+        renderApp(); // Render lại bảng để mở khóa các ô input
     } else {
-        if (pin !== null) showToast("Sai mã PIN! Không thể mở khóa.");
+        showToast("❌ Sai mã PIN! Không thể mở khóa.");
     }
   }
 
@@ -526,34 +634,37 @@
     }
   }
 
-  // 6. Xóa Bill phụ có hỏi mã PIN
-  function deleteDetail(idToDelete) {
-    const pin = prompt("Bảo mật: Vui lòng nhập mã PIN Admin để xóa hóa đơn này (Gợi ý: 528689):");
+  // 6. Xóa Bill phụ bằng Custom Modal
+  async function deleteDetail(idToDelete) {
+    // 1. Chặn bằng mã PIN trước
+    const pin = await openPinModal("Thao tác xóa cần quyền Admin.<br>Vui lòng nhập mã PIN:");
+    if (pin === null) return;
+    
     if (pin !== ADMIN_PIN) {
-        showToast("Sai mã PIN! Thao tác xóa bị hủy.");
+        showToast("❌ Sai mã PIN! Thao tác xóa bị hủy.");
         return;
     }
 
-    if (!confirm("Bạn có chắc chắn muốn xóa vĩnh viễn bill này? Tổng chi phí của hạng mục cha sẽ tự động giảm xuống.")) return;
+    // 2. Hiện Modal Xác nhận Xóa
+    const isConfirmed = await openConfirmModal("Bạn có chắc chắn muốn xóa vĩnh viễn hóa đơn này?<br><br><span style='color:var(--danger-red); font-size:13px;'>Tổng chi phí của hạng mục cha sẽ tự động tính toán lại.</span>");
+    if (!isConfirmed) return;
 
-    showToast("Đang xóa dữ liệu...");
+    showToast("⏳ Đang xóa dữ liệu...");
     fetch(API_URL, {
         method: "POST",
         redirect: "follow",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        // Sử dụng hành động deleteCapexItem mà chúng ta vừa thêm vào Code.gs
         body: JSON.stringify({ action: "deleteCapexItem", id: idToDelete })
     })
     .then(res => res.json())
     .then(data => {
         if (data.status === "success") {
-            showToast("Đã xóa! Đang tính lại tổng...");
-            // Tải lại Data để tính lại Auto-sum trên server
-            syncDataFromServer();
+            showToast("✅ Đã xóa bill! Đang tính lại tổng...");
+            syncDataFromServer(); // Tải lại Data để render
         } else {
-            showToast("Lỗi xóa: " + data.message);
+            showToast("❌ Lỗi xóa: " + data.message);
         }
-    }).catch(e => { console.error(e); showToast("Lỗi kết nối khi xóa."); });
+    }).catch(e => { console.error(e); showToast("❌ Lỗi kết nối khi xóa."); });
   }
 
   // Bắt đầu chạy App
